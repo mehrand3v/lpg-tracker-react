@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { signIn } from "../services/authService";
 import { useNavigate } from "react-router-dom";
+import logo from "../assets/logo.svg";
+import { Loader2 } from "lucide-react";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -31,20 +33,45 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow-md">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 bg-gradient-to-r from-blue-500 to-purple-600 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow-md relative">
+        {/* Logo positioned in the top-left inside the box */}
+        <div className="absolute top-4 left-4">
+          <img
+            src={logo}
+            alt="Logo"
+            className="h-12 w-12 rounded-full bg-blue-100 p-2 shadow-md"
+          />
+        </div>
+
+        <div className="text-center">
+          <h2 className="mt-6 text-2xl font-extrabold text-gray-900">
             Sign in to your account
           </h2>
         </div>
 
         {error && (
-          <div
-            className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
-            role="alert"
-          >
-            <span className="block sm:inline">{error}</span>
+          <div className="bg-red-50 border-l-4 border-red-400 p-4 rounded-md">
+            <div className="flex">
+              <div className="flex-shrink-0">
+                <svg
+                  className="h-5 w-5 text-red-400"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <p className="text-sm text-red-700">{error}</p>
+              </div>
+            </div>
           </div>
         )}
 
@@ -92,16 +119,13 @@ const Login = () => {
                 loading ? "opacity-70 cursor-not-allowed" : ""
               }`}
             >
-              {loading ? "Signing in..." : "Sign in"}
+              {loading ? (
+                <Loader2 className="h-5 w-5 animate-spin" />
+              ) : (
+                "Sign in"
+              )}
             </button>
           </div>
-
-          {/* Remove the "Forgot Password" link if not needed */}
-          {/* <div className="text-sm text-center">
-            <a href="/reset-password" className="font-medium text-blue-600 hover:text-blue-500">
-              Forgot your password?
-            </a>
-          </div> */}
         </form>
       </div>
     </div>
