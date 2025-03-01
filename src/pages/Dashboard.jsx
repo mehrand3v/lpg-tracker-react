@@ -5,6 +5,8 @@ import {
   fetchRecentTransactions,
 } from "../services/firebaseService";
 import { db } from "../firebase";
+import { signOut } from "../services/authService";
+import { useNavigate } from "react-router-dom";
 import MetricCard from "../components/MetricCard";
 import Button from "../components/Button";
 import TransactionCard from "../components/TransactionCard";
@@ -23,6 +25,7 @@ import {
   Menu,
   X,
   Loader2,
+  LogOut,
 } from "lucide-react";
 
 const Dashboard = () => {
@@ -31,6 +34,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const navigate = useNavigate();
 
   // Add status for each section loading state
   const [customersLoading, setCustomersLoading] = useState(true);
@@ -43,9 +47,9 @@ const Dashboard = () => {
 
     try {
       // Fetch total customers
-     const { totalCustomers } = await fetchCustomers();
-     setTotalCustomers(totalCustomers);
-     setCustomersLoading(false);
+      const { totalCustomers } = await fetchCustomers();
+      setTotalCustomers(totalCustomers);
+      setCustomersLoading(false);
 
       // Fetch recent transactions
       const transactions = await fetchRecentTransactions(5);
@@ -83,11 +87,20 @@ const Dashboard = () => {
     fetchData();
   };
 
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      navigate("/login");
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
+  };
+
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-screen bg-gray-50">
       {/* Sidebar for large screens */}
-      <div className="hidden lg:flex flex-col w-64 bg-gradient-to-b from-blue-700 to-blue-900 text-white">
-        <div className="p-5 border-b border-blue-600">
+      <div className="hidden lg:flex flex-col w-64 bg-gradient-to-b from-indigo-800 to-indigo-950 text-white">
+        <div className="p-5 border-b border-indigo-700 flex justify-between items-center">
           <h2 className="text-xl font-bold">Gas Dashboard</h2>
         </div>
 
@@ -95,46 +108,56 @@ const Dashboard = () => {
           <div className="px-4 space-y-1">
             <a
               href="#"
-              className="flex items-center px-4 py-3 text-white bg-blue-800 rounded-lg"
+              className="flex items-center px-4 py-3 text-white bg-indigo-700 rounded-lg"
             >
               <Home className="mr-3 h-5 w-5" />
               Dashboard
             </a>
             <a
               href="#"
-              className="flex items-center px-4 py-3 text-blue-100 hover:bg-blue-800 rounded-lg"
+              className="flex items-center px-4 py-3 text-indigo-100 hover:bg-indigo-700 rounded-lg"
             >
               <Users className="mr-3 h-5 w-5" />
               Customers
             </a>
             <a
               href="#"
-              className="flex items-center px-4 py-3 text-blue-100 hover:bg-blue-800 rounded-lg"
+              className="flex items-center px-4 py-3 text-indigo-100 hover:bg-indigo-700 rounded-lg"
             >
               <ShoppingCart className="mr-3 h-5 w-5" />
               Transactions
             </a>
             <a
               href="#"
-              className="flex items-center px-4 py-3 text-blue-100 hover:bg-blue-800 rounded-lg"
+              className="flex items-center px-4 py-3 text-indigo-100 hover:bg-indigo-700 rounded-lg"
             >
               <Package className="mr-3 h-5 w-5" />
               Inventory
             </a>
             <a
               href="#"
-              className="flex items-center px-4 py-3 text-blue-100 hover:bg-blue-800 rounded-lg"
+              className="flex items-center px-4 py-3 text-indigo-100 hover:bg-indigo-700 rounded-lg"
             >
               <PieChart className="mr-3 h-5 w-5" />
               Reports
             </a>
             <a
               href="#"
-              className="flex items-center px-4 py-3 text-blue-100 hover:bg-blue-800 rounded-lg"
+              className="flex items-center px-4 py-3 text-indigo-100 hover:bg-indigo-700 rounded-lg"
             >
               <Settings className="mr-3 h-5 w-5" />
               Settings
             </a>
+          </div>
+
+          <div className="mt-8 px-4">
+            <button
+              onClick={handleLogout}
+              className="flex items-center w-full px-4 py-3 text-indigo-100 hover:bg-indigo-700 rounded-lg"
+            >
+              <LogOut className="mr-3 h-5 w-5" />
+              Logout
+            </button>
           </div>
         </nav>
       </div>
@@ -146,10 +169,10 @@ const Dashboard = () => {
           onClick={() => setSidebarOpen(false)}
         >
           <div
-            className="fixed inset-y-0 left-0 w-64 bg-gradient-to-b from-blue-700 to-blue-900 text-white z-50"
+            className="fixed inset-y-0 left-0 w-64 bg-gradient-to-b from-indigo-800 to-indigo-950 text-white z-50"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex justify-between items-center p-5 border-b border-blue-600">
+            <div className="flex justify-between items-center p-5 border-b border-indigo-700">
               <h2 className="text-xl font-bold">Gas Dashboard</h2>
               <button onClick={() => setSidebarOpen(false)}>
                 <X className="h-6 w-6" />
@@ -160,46 +183,54 @@ const Dashboard = () => {
               <div className="px-4 space-y-1">
                 <a
                   href="#"
-                  className="flex items-center px-4 py-3 text-white bg-blue-800 rounded-lg"
+                  className="flex items-center px-4 py-3 text-white bg-indigo-700 rounded-lg"
                 >
                   <Home className="mr-3 h-5 w-5" />
                   Dashboard
                 </a>
                 <a
                   href="#"
-                  className="flex items-center px-4 py-3 text-blue-100 hover:bg-blue-800 rounded-lg"
+                  className="flex items-center px-4 py-3 text-indigo-100 hover:bg-indigo-700 rounded-lg"
                 >
                   <Users className="mr-3 h-5 w-5" />
                   Customers
                 </a>
                 <a
                   href="#"
-                  className="flex items-center px-4 py-3 text-blue-100 hover:bg-blue-800 rounded-lg"
+                  className="flex items-center px-4 py-3 text-indigo-100 hover:bg-indigo-700 rounded-lg"
                 >
                   <ShoppingCart className="mr-3 h-5 w-5" />
                   Transactions
                 </a>
                 <a
                   href="#"
-                  className="flex items-center px-4 py-3 text-blue-100 hover:bg-blue-800 rounded-lg"
+                  className="flex items-center px-4 py-3 text-indigo-100 hover:bg-indigo-700 rounded-lg"
                 >
                   <Package className="mr-3 h-5 w-5" />
                   Inventory
                 </a>
                 <a
                   href="#"
-                  className="flex items-center px-4 py-3 text-blue-100 hover:bg-blue-800 rounded-lg"
+                  className="flex items-center px-4 py-3 text-indigo-100 hover:bg-indigo-700 rounded-lg"
                 >
                   <PieChart className="mr-3 h-5 w-5" />
                   Reports
                 </a>
                 <a
                   href="#"
-                  className="flex items-center px-4 py-3 text-blue-100 hover:bg-blue-800 rounded-lg"
+                  className="flex items-center px-4 py-3 text-indigo-100 hover:bg-indigo-700 rounded-lg"
                 >
                   <Settings className="mr-3 h-5 w-5" />
                   Settings
                 </a>
+
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center w-full mt-8 px-4 py-3 text-indigo-100 hover:bg-indigo-700 rounded-lg"
+                >
+                  <LogOut className="mr-3 h-5 w-5" />
+                  Logout
+                </button>
               </div>
             </nav>
           </div>
@@ -225,27 +256,37 @@ const Dashboard = () => {
                 Welcome back! Here's your business at a glance
               </p>
             </div>
-            <button
-              onClick={handleRefresh}
-              disabled={refreshing}
-              className="p-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer relative overflow-hidden"
-              title="Reload data"
-            >
-              {refreshing ? (
-                <div className="animate-spin">
-                  <Loader2 className="h-5 w-5" />
-                </div>
-              ) : (
-                <RefreshCw className="h-5 w-5 hover:rotate-180 transition-transform duration-500" />
-              )}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleRefresh}
+                disabled={refreshing}
+                className="p-2 rounded-full bg-gradient-to-r from-indigo-600 to-indigo-800 text-white shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer relative overflow-hidden"
+                title="Reload data"
+              >
+                {refreshing ? (
+                  <div className="animate-spin">
+                    <Loader2 className="h-5 w-5" />
+                  </div>
+                ) : (
+                  <RefreshCw className="h-5 w-5" />
+                )}
 
-              {/* Ripple effect when clicked */}
-              {refreshing && (
-                <span className="absolute inset-0 pointer-events-none">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-30"></span>
-                </span>
-              )}
-            </button>
+                {/* Ripple effect when clicked */}
+                {refreshing && (
+                  <span className="absolute inset-0 pointer-events-none">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-30"></span>
+                  </span>
+                )}
+              </button>
+
+              <button
+                onClick={handleLogout}
+                className="lg:hidden p-2 rounded-full bg-gradient-to-r from-gray-500 to-gray-700 text-white shadow-md hover:shadow-lg transition-all duration-300"
+                title="Logout"
+              >
+                <LogOut className="h-5 w-5" />
+              </button>
+            </div>
           </div>
 
           {/* Metrics Section - Smaller cards on mobile */}
@@ -254,42 +295,42 @@ const Dashboard = () => {
               title="Total Customers"
               value={
                 customersLoading ? (
-                  <Loader2 className="h-6 w-6 animate-spin text-white" />
+                  <Loader2 className="h-5 w-5 md:h-6 md:w-6 animate-spin text-white" />
                 ) : (
                   totalCustomers
                 )
               }
-              icon={<Users size={20} className="text-white" />}
-              color="from-blue-400 to-blue-600"
+              icon={<Users size={18} className="text-white" />}
+              color="from-indigo-500 to-indigo-700"
             />
             <MetricCard
               title="Total Cylinders"
               value={
                 loading ? (
-                  <Loader2 className="h-6 w-6 animate-spin text-white" />
+                  <Loader2 className="h-5 w-5 md:h-6 md:w-6 animate-spin text-white" />
                 ) : (
                   "500"
                 )
               }
-              icon={<Flame size={20} className="text-white" />}
-              color="from-orange-400 to-orange-600"
+              icon={<Flame size={18} className="text-white" />}
+              color="from-amber-500 to-amber-700"
             />
             <MetricCard
               title="Balance Due"
               value={
                 loading ? (
-                  <Loader2 className="h-6 w-6 animate-spin text-white" />
+                  <Loader2 className="h-5 w-5 md:h-6 md:w-6 animate-spin text-white" />
                 ) : (
                   formatCurrency(25000)
                 )
               }
-              icon={<Wallet size={20} className="text-white" />}
-              color="from-green-400 to-green-600"
+              icon={<Wallet size={18} className="text-white" />}
+              color="from-emerald-500 to-emerald-700"
             />
           </div>
 
           {/* Quick Actions Section */}
-          <div className="bg-white p-4 md:p-6 rounded-xl shadow-md mb-6">
+          <div className="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-gray-100 mb-6">
             <h2 className="text-lg md:text-xl font-semibold mb-4">
               Quick Actions
             </h2>
@@ -320,15 +361,15 @@ const Dashboard = () => {
           </div>
 
           {/* Recent Transactions Section */}
-          <div className="bg-white p-4 md:p-6 rounded-xl shadow-md">
+          <div className="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-gray-100">
             <h2 className="text-lg md:text-xl font-semibold mb-4 flex items-center">
-              <ShoppingCart size={18} className="mr-2 text-blue-500" />
+              <ShoppingCart size={18} className="mr-2 text-indigo-500" />
               Recent Transactions
             </h2>
 
             {transactionsLoading ? (
               <div className="py-8 flex flex-col items-center text-gray-500">
-                <Loader2 className="h-8 w-8 animate-spin text-blue-500 mb-2" />
+                <Loader2 className="h-8 w-8 animate-spin text-indigo-500 mb-2" />
                 <p>Loading transactions...</p>
               </div>
             ) : recentTransactions.length > 0 ? (

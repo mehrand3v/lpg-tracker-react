@@ -5,7 +5,7 @@ import {
   signOut as firebaseSignOut,
   sendPasswordResetEmail,
   updateProfile,
-  onAuthStateChanged
+  onAuthStateChanged,
 } from "firebase/auth";
 import { auth } from "../firebase";
 
@@ -13,12 +13,16 @@ import { auth } from "../firebase";
 export const registerUser = async (email, password, displayName) => {
   try {
     // Create the user
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
 
     // Add the display name
     if (displayName) {
       await updateProfile(userCredential.user, {
-        displayName: displayName
+        displayName: displayName,
       });
     }
 
@@ -32,7 +36,11 @@ export const registerUser = async (email, password, displayName) => {
 // Sign in existing user
 export const signIn = async (email, password) => {
   try {
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const userCredential = await signInWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
     return userCredential.user;
   } catch (error) {
     console.error("Error signing in:", error);
