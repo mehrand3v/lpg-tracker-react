@@ -14,7 +14,8 @@ import SideNavbar from "./components/SideNavbar";
 import Dashboard from "./pages/Dashboard";
 import CustomersPage from "./pages/CustomersPage";
 import CustomerDetailPage from "./pages/CustomerDetailPage";
-import NewTransactionPage from "./pages/NewTransactionPage"; // Import the new transaction page
+import NewCustomerPage from "./pages/NewCustomerPage";
+import NewTransactionPage from "./pages/NewTransactionPage";
 import { useAuth } from "./context/AuthContext";
 
 // Layout component to handle the navbars and content structure
@@ -72,6 +73,15 @@ function App() {
               </PrivateRoute>
             }
           />
+          <Route path="/customers/new"
+            element={
+              <PrivateRoute>
+                <AppLayout>
+                  <NewCustomerPage />
+                </AppLayout>
+                </PrivateRoute>
+                }
+                />
           <Route
             path="/customers/:customerId"
             element={

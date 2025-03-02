@@ -19,8 +19,8 @@ const CustomersPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [customersPerPage] = useState(10);
   const [filters, setFilters] = useState({
-    hasCylindersOut: false,
-    hasBalanceDue: false,
+    hasCylindersHeld: false,
+    hasBalanceOutstanding: false,
   });
   const navigate = useNavigate();
 
@@ -53,14 +53,16 @@ const CustomersPage = () => {
     }
 
     // Apply filters
-    if (filters.hasCylindersOut) {
+    if (filters.hasCylindersHeld) {
       filtered = filtered.filter(
-        (customer) => (customer.cylindersOut || 0) > 0
+        (customer) => (customer.cylindersHeld || 0) > 0
       );
     }
 
-    if (filters.hasBalanceDue) {
-      filtered = filtered.filter((customer) => (customer.balanceDue || 0) > 0);
+    if (filters.hasBalanceOutstanding) {
+      filtered = filtered.filter(
+        (customer) => (customer.totalBalance || 0) > 0
+      );
     }
 
     setFilteredCustomers(filtered);
@@ -109,7 +111,7 @@ const CustomersPage = () => {
             Customers
           </h1>
           <p className="text-gray-600 mt-1">
-            Manage your customers and their transaction history
+            Manage your customers and their cylinder/payment records
           </p>
         </div>
         <button
@@ -138,9 +140,9 @@ const CustomersPage = () => {
 
         <div className="flex space-x-2">
           <button
-            onClick={() => handleFilterChange("hasCylindersOut")}
+            onClick={() => handleFilterChange("hasCylindersHeld")}
             className={`px-3 py-2 text-sm rounded-lg flex items-center ${
-              filters.hasCylindersOut
+              filters.hasCylindersHeld
                 ? "bg-indigo-600 text-white"
                 : "bg-white border border-gray-300 text-gray-700"
             }`}
@@ -150,9 +152,9 @@ const CustomersPage = () => {
           </button>
 
           <button
-            onClick={() => handleFilterChange("hasBalanceDue")}
+            onClick={() => handleFilterChange("hasBalanceOutstanding")}
             className={`px-3 py-2 text-sm rounded-lg flex items-center ${
-              filters.hasBalanceDue
+              filters.hasBalanceOutstanding
                 ? "bg-indigo-600 text-white"
                 : "bg-white border border-gray-300 text-gray-700"
             }`}
@@ -176,19 +178,25 @@ const CustomersPage = () => {
                 <tr>
                   <th
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-auto"
                   >
                     Customer
                   </th>
                   <th
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-auto"
                   >
                     Balance Due
                   </th>
                   <th
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-auto"
+                  >
+                    Total Received
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-auto"
                   >
                     Cylinders Out
                   </th>
@@ -205,7 +213,8 @@ const CustomersPage = () => {
                       <div className="flex items-center">
                         <div className="flex-shrink-0 h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
                           <span className="text-indigo-700 font-medium">
-                            {customer.name?.substring(0, 2).toUpperCase() || "NA"}
+                            {customer.name?.substring(0, 2).toUpperCase() ||
+                              "NA"}
                           </span>
                         </div>
                         <div className="ml-4">
@@ -225,11 +234,16 @@ const CustomersPage = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-rose-600">
-                        {formatCurrency(customer.balanceDue || 0)}
+                        {formatCurrency(customer.totalBalance || 0)}
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {customer.cylindersOut || 0}
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm font-medium text-green-600">
+                        {formatCurrency(customer.totalReceived || 0)}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 font-medium">
+                      {customer.cylindersHeld || 0}
                     </td>
                   </tr>
                 ))}
@@ -342,7 +356,9 @@ const CustomersPage = () => {
       ) : (
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8 text-center">
           <div className="text-gray-500">
-            {searchQuery || filters.hasCylindersOut || filters.hasBalanceDue
+            {searchQuery ||
+            filters.hasCylindersHeld ||
+            filters.hasBalanceOutstanding
               ? "No customers match your search criteria"
               : "No customers found"}
           </div>

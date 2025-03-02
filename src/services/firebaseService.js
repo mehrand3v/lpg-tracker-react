@@ -87,7 +87,6 @@ export const fetchCustomerTransactions = async (customerId) => {
   }
 };
 
-
 export const addTransaction = async (customerId, transaction) => {
   try {
     const transactionData = {
@@ -102,4 +101,23 @@ export const addTransaction = async (customerId, transaction) => {
   }
 };
 
+// Create a new customer with default values
+export const createCustomer = async (customerData) => {
+  try {
+    const newCustomerData = {
+      ...customerData,
+      totalBalance: 0,
+      totalReceived: 0,
+      cylindersHeld: 0,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    };
+
+    const docRef = await addDoc(collection(db, "customers"), newCustomerData);
+    return docRef.id;
+  } catch (error) {
+    console.error("Error creating customer:", error);
+    throw error;
+  }
+};
 // You can add more Firebase-related functions here
