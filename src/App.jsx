@@ -12,6 +12,8 @@ import Login from "./components/Login";
 import FooterNavbar from "./components/FooterNavbar";
 import SideNavbar from "./components/SideNavbar"; // Import the new SideNavbar
 import Dashboard from "./pages/Dashboard";
+import CustomersPage from "./pages/CustomersPage";
+import CustomerDetailPage from "./pages/CustomerDetailPage";
 import { useAuth } from "./context/AuthContext"; // Import useAuth
 
 // Layout component to handle the navbars and content structure
@@ -65,9 +67,17 @@ function App() {
               <PrivateRoute>
                 <AppLayout>
                   {/* Replace with your Customers component */}
-                  <div className="p-6">
-                    <h1 className="text-2xl font-bold">Customers</h1>
-                  </div>
+                  <CustomersPage />
+                </AppLayout>
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/customers/:customerId"
+            element={
+              <PrivateRoute>
+                <AppLayout>
+                  <CustomerDetailPage />
                 </AppLayout>
               </PrivateRoute>
             }
