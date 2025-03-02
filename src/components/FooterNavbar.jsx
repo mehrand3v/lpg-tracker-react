@@ -4,14 +4,24 @@ import { Link, useLocation } from "react-router-dom";
 import { Home, Users, Clock, Package, Settings, LogOut } from "lucide-react";
 import { signOut } from "../services/authService";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 const FooterNavbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { currentUser } = useAuth(); // Add this line
 
+  // Add this check - don't render navbar if not authenticated
+  if (!currentUser) {
+    return null;
+  }
+  // Helper function to determine if a path is active
   // Helper function to determine if a path is active
   const isActive = (path) => {
-    return location.pathname === path;
+    if (path === "/dashboard") {
+      return location.pathname === "/dashboard";
+    }
+    return location.pathname.startsWith(path);
   };
 
   // Dynamic styles based on active state
@@ -40,15 +50,17 @@ const FooterNavbar = () => {
       <div className="flex justify-around p-2">
         {/* Dashboard Link */}
         <Link
-          to="/"
+          to="/dashboard"
           className={`flex flex-col items-center py-2 px-3 rounded-lg transition-all duration-300 hover:scale-110 ${
             getLinkStyles("/").bgClass
           }`}
         >
-          <Home className={`h-5 w-5 ${getLinkStyles("/").iconClass}`} />
+          <Home
+            className={`h-5 w-5 ${getLinkStyles("/dashboard").iconClass}`}
+          />
           <span
             className={`text-xs font-medium mt-1 ${
-              getLinkStyles("/").textClass
+              getLinkStyles("/dashboard").textClass
             }`}
           >
             Home
