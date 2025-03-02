@@ -7,9 +7,7 @@ import {
 import {
   User,
   Phone,
-  Mail,
   MapPin,
-  Calendar,
   ArrowLeft,
   DollarSign,
   Loader2,
@@ -19,6 +17,8 @@ import {
   Clock,
   Plus,
   Filter,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 
 const CustomerDetailPage = () => {
@@ -35,7 +35,7 @@ const CustomerDetailPage = () => {
     cylindersOut: 0,
   });
   const [currentPage, setCurrentPage] = useState(1);
-  const [transactionsPerPage] = useState(10);
+  const [transactionsPerPage] = useState(15); // Increased from 10 to show more per page
   const [filters, setFilters] = useState({
     type: "all", // 'all', 'sale', 'payment', 'return'
   });
@@ -142,57 +142,57 @@ const CustomerDetailPage = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-full py-24">
-        <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+      <div className="flex justify-center items-center h-full py-12">
+        <Loader2 className="h-6 w-6 animate-spin text-indigo-600" />
       </div>
     );
   }
 
   return (
-    <div className="p-4 md:p-6 max-w-full">
+    <div className="p-2 md:p-4 max-w-full">
       {/* Back button */}
       <Link
         to="/customers"
-        className="inline-flex items-center text-indigo-600 hover:text-indigo-800 mb-6"
+        className="inline-flex items-center text-indigo-600 hover:text-indigo-800 mb-3 text-sm"
       >
-        <ArrowLeft className="h-4 w-4 mr-1" />
+        <ArrowLeft className="h-3 w-3 mr-1" />
         Back to Customers
       </Link>
 
       {/* Customer Info Card */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 md:p-6 mb-6">
-        <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
-          <div className="flex items-center mb-4 md:mb-0">
-            <div className="h-16 w-16 rounded-full bg-indigo-100 flex items-center justify-center mr-4">
-              <span className="text-2xl text-indigo-700 font-medium">
+      <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-3 mb-3">
+        <div className="flex flex-row items-center justify-between mb-3">
+          <div className="flex items-center">
+            <div className="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center mr-3">
+              <span className="text-lg text-indigo-700 font-medium">
                 {customer?.name?.substring(0, 2).toUpperCase() || "NA"}
               </span>
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-gray-800">
+              <h1 className="text-lg font-bold text-gray-800">
                 {customer?.name || "Unknown Customer"}
               </h1>
-              <p className="text-gray-500 flex items-center">
-                <Clock className="h-4 w-4 mr-1" />
-                Customer since:{" "}
+              <p className="text-gray-500 text-xs flex items-center">
+                <Clock className="h-3 w-3 mr-1" />
+                Since:{" "}
                 {customer?.createdAt ? formatDate(customer.createdAt) : "N/A"}
               </p>
             </div>
           </div>
-          <button
-            onClick={handleAddTransaction}
-            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 flex items-center justify-center"
+          <Link
+            to={`/customers/${customerId}/new-transaction`}
+            className="px-2 py-1 bg-indigo-600 text-white text-xs rounded hover:bg-indigo-700 flex items-center"
           >
-            <Plus className="h-5 w-5 mr-2" />
+            <Plus className="h-3 w-3 mr-1" />
             Add Transaction
-          </button>
+          </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm">
           <div className="flex items-start">
-            <Phone className="h-5 w-5 text-gray-400 mr-2 mt-0.5" />
+            <Phone className="h-4 w-4 text-gray-400 mr-1 mt-0.5" />
             <div>
-              <p className="text-sm text-gray-500">Phone</p>
+              <p className="text-xs text-gray-500">Phone</p>
               <p className="text-gray-800">
                 {customer?.phone || "No phone number"}
               </p>
@@ -200,17 +200,9 @@ const CustomerDetailPage = () => {
           </div>
 
           <div className="flex items-start">
-            <Mail className="h-5 w-5 text-gray-400 mr-2 mt-0.5" />
+            <MapPin className="h-4 w-4 text-gray-400 mr-1 mt-0.5" />
             <div>
-              <p className="text-sm text-gray-500">Email</p>
-              <p className="text-gray-800">{customer?.email || "No email"}</p>
-            </div>
-          </div>
-
-          <div className="flex items-start">
-            <MapPin className="h-5 w-5 text-gray-400 mr-2 mt-0.5" />
-            <div>
-              <p className="text-sm text-gray-500">Address</p>
+              <p className="text-xs text-gray-500">Address</p>
               <p className="text-gray-800">
                 {customer?.address || "No address"}
               </p>
@@ -218,172 +210,167 @@ const CustomerDetailPage = () => {
           </div>
 
           <div className="flex items-start">
-            <User className="h-5 w-5 text-gray-400 mr-2 mt-0.5" />
+            <User className="h-4 w-4 text-gray-400 mr-1 mt-0.5" />
             <div>
-              <p className="text-sm text-gray-500">Notes</p>
+              <p className="text-xs text-gray-500">Notes</p>
               <p className="text-gray-800">{customer?.notes || "No notes"}</p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Financial Summary Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-        <div className="bg-gradient-to-r from-indigo-500 to-indigo-700 rounded-xl p-4 text-white shadow-md">
+      {/* Financial & Cylinder Stats - More Compact Layout */}
+      <div className="grid grid-cols-6 gap-2 mb-3">
+        {/* Financial Stats */}
+        <div className="col-span-2 bg-gradient-to-r from-indigo-500 to-indigo-700 rounded-lg p-2 text-white shadow-sm">
           <div className="flex justify-between items-start">
             <div>
-              <p className="text-indigo-100 text-sm">Total Amount</p>
-              <p className="text-2xl font-bold mt-1">
+              <p className="text-indigo-100 text-xs">Total</p>
+              <p className="text-base font-bold">
                 {formatCurrency(stats.totalAmount)}
               </p>
             </div>
-            <DollarSign className="h-6 w-6 text-indigo-200" />
+            <DollarSign className="h-4 w-4 text-indigo-200" />
           </div>
         </div>
 
-        <div className="bg-gradient-to-r from-emerald-500 to-emerald-700 rounded-xl p-4 text-white shadow-md">
+        <div className="col-span-2 bg-gradient-to-r from-emerald-500 to-emerald-700 rounded-lg p-2 text-white shadow-sm">
           <div className="flex justify-between items-start">
             <div>
-              <p className="text-emerald-100 text-sm">Amount Paid</p>
-              <p className="text-2xl font-bold mt-1">
+              <p className="text-emerald-100 text-xs">Paid</p>
+              <p className="text-base font-bold">
                 {formatCurrency(stats.amountPaid)}
               </p>
             </div>
-            <TrendingUp className="h-6 w-6 text-emerald-200" />
+            <TrendingUp className="h-4 w-4 text-emerald-200" />
           </div>
         </div>
 
-        <div className="bg-gradient-to-r from-rose-500 to-rose-700 rounded-xl p-4 text-white shadow-md">
+        <div className="col-span-2 bg-gradient-to-r from-rose-500 to-rose-700 rounded-lg p-2 text-white shadow-sm">
           <div className="flex justify-between items-start">
             <div>
-              <p className="text-rose-100 text-sm">Balance Due</p>
-              <p className="text-2xl font-bold mt-1">
+              <p className="text-rose-100 text-xs">Balance</p>
+              <p className="text-base font-bold">
                 {formatCurrency(stats.balanceDue)}
               </p>
             </div>
-            <TrendingDown className="h-6 w-6 text-rose-200" />
+            <TrendingDown className="h-4 w-4 text-rose-200" />
           </div>
         </div>
-      </div>
 
-      {/* Cylinder Summary Cards */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
-        <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+        {/* Cylinder Stats */}
+        <div className="col-span-2 bg-white rounded-lg p-2 shadow-sm border border-gray-100">
           <div className="flex justify-between items-start">
             <div>
-              <p className="text-gray-500 text-sm">Total Cylinders Issued</p>
-              <p className="text-2xl font-bold mt-1 text-amber-600">
+              <p className="text-gray-500 text-xs">Issued</p>
+              <p className="text-base font-bold text-amber-600">
                 {stats.totalCylindersIssued}
               </p>
             </div>
-            <Flame className="h-6 w-6 text-amber-500" />
+            <Flame className="h-4 w-4 text-amber-500" />
           </div>
         </div>
 
-        <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+        <div className="col-span-2 bg-white rounded-lg p-2 shadow-sm border border-gray-100">
           <div className="flex justify-between items-start">
             <div>
-              <p className="text-gray-500 text-sm">Total Cylinders Returned</p>
-              <p className="text-2xl font-bold mt-1 text-green-600">
+              <p className="text-gray-500 text-xs">Returned</p>
+              <p className="text-base font-bold text-green-600">
                 {stats.totalCylindersReturned}
               </p>
             </div>
-            <Flame className="h-6 w-6 text-green-500" />
+            <Flame className="h-4 w-4 text-green-500" />
           </div>
         </div>
 
-        <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+        <div className="col-span-2 bg-white rounded-lg p-2 shadow-sm border border-gray-100">
           <div className="flex justify-between items-start">
             <div>
-              <p className="text-gray-500 text-sm">Cylinders Outstanding</p>
-              <p className="text-2xl font-bold mt-1 text-blue-600">
+              <p className="text-gray-500 text-xs">Outstanding</p>
+              <p className="text-base font-bold text-blue-600">
                 {stats.cylindersOut}
               </p>
             </div>
-            <Flame className="h-6 w-6 text-blue-500" />
+            <Flame className="h-4 w-4 text-blue-500" />
           </div>
         </div>
       </div>
 
       {/* Transaction History */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 md:p-6">
-        <div className="flex flex-col md:flex-row md:items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-gray-800">
+      <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-3">
+        <div className="flex flex-col md:flex-row md:items-center justify-between mb-3">
+          <h2 className="text-base font-bold text-gray-800">
             Transaction History
           </h2>
-          <div className="flex items-center space-x-2 mt-4 md:mt-0">
+          <div className="flex items-center space-x-1 mt-2 md:mt-0 text-xs">
             <button
               onClick={() => setFilters({ ...filters, type: "all" })}
-              className={`px-3 py-2 text-sm rounded-lg flex items-center ${
+              className={`px-2 py-1 rounded ${
                 filters.type === "all"
                   ? "bg-indigo-600 text-white"
                   : "bg-white border border-gray-300 text-gray-700"
               }`}
             >
-              <Filter className="h-4 w-4 mr-1" />
               All
             </button>
             <button
               onClick={() => setFilters({ ...filters, type: "sale" })}
-              className={`px-3 py-2 text-sm rounded-lg flex items-center ${
+              className={`px-2 py-1 rounded ${
                 filters.type === "sale"
                   ? "bg-indigo-600 text-white"
                   : "bg-white border border-gray-300 text-gray-700"
               }`}
             >
-              <Filter className="h-4 w-4 mr-1" />
               Sales
             </button>
             <button
               onClick={() => setFilters({ ...filters, type: "payment" })}
-              className={`px-3 py-2 text-sm rounded-lg flex items-center ${
+              className={`px-2 py-1 rounded ${
                 filters.type === "payment"
                   ? "bg-indigo-600 text-white"
                   : "bg-white border border-gray-300 text-gray-700"
               }`}
             >
-              <Filter className="h-4 w-4 mr-1" />
               Payments
             </button>
             <button
               onClick={() => setFilters({ ...filters, type: "return" })}
-              className={`px-3 py-2 text-sm rounded-lg flex items-center ${
+              className={`px-2 py-1 rounded ${
                 filters.type === "return"
                   ? "bg-indigo-600 text-white"
                   : "bg-white border border-gray-300 text-gray-700"
               }`}
             >
-              <Filter className="h-4 w-4 mr-1" />
               Returns
             </button>
           </div>
         </div>
 
         {currentTransactions.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">
-            No transaction history found for this customer
+          <div className="text-center py-4 text-gray-500 text-sm">
+            No transaction history found
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
+            <table className="min-w-full divide-y divide-gray-200 text-xs">
               <thead>
                 <tr className="bg-gray-50">
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Date
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Type
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Amount
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Cylinders Issued
+                  <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Issued
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Cylinders Returned
+                  <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Returned
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Notes
                   </th>
                 </tr>
@@ -391,12 +378,12 @@ const CustomerDetailPage = () => {
               <tbody className="bg-white divide-y divide-gray-200">
                 {currentTransactions.map((transaction) => (
                   <tr key={transaction.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-2 py-1.5 whitespace-nowrap text-xs text-gray-500">
                       {formatDate(transaction.createdAt)}
                     </td>
-                    <td className="px-4 py-3 whitespace-nowrap">
+                    <td className="px-2 py-1.5 whitespace-nowrap">
                       <span
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium ${
                           transaction.type === "sale"
                             ? "bg-indigo-100 text-indigo-800"
                             : transaction.type === "payment"
@@ -410,7 +397,7 @@ const CustomerDetailPage = () => {
                           transaction.type?.slice(1) || "Unknown"}
                       </span>
                     </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm">
+                    <td className="px-2 py-1.5 whitespace-nowrap text-xs">
                       <span
                         className={
                           transaction.type === "payment"
@@ -421,13 +408,13 @@ const CustomerDetailPage = () => {
                         {formatCurrency(transaction.amount || 0)}
                       </span>
                     </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-2 py-1.5 whitespace-nowrap text-xs text-gray-900">
                       {transaction.cylindersIssued || "-"}
                     </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-2 py-1.5 whitespace-nowrap text-xs text-gray-900">
                       {transaction.cylindersReturned || "-"}
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-900">
+                    <td className="px-2 py-1.5 text-xs text-gray-900 truncate max-w-xs">
                       {transaction.notes || "-"}
                     </td>
                   </tr>
@@ -437,21 +424,21 @@ const CustomerDetailPage = () => {
           </div>
         )}
 
-        {/* Pagination */}
+        {/* Compact Pagination */}
         {totalPages > 1 && (
-          <div className="flex justify-between items-center mt-6">
+          <div className="flex justify-between items-center mt-3 text-xs">
             <button
               onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
               disabled={currentPage === 1}
-              className={`px-4 py-2 text-sm font-medium rounded-lg ${
+              className={`px-2 py-1 rounded ${
                 currentPage === 1
                   ? "bg-gray-100 text-gray-400 cursor-not-allowed"
                   : "bg-white text-gray-700 hover:bg-gray-50"
               }`}
             >
-              Previous
+              <ChevronLeft className="h-3 w-3" />
             </button>
-            <span className="text-sm text-gray-700">
+            <span className="text-xs text-gray-700">
               Page {currentPage} of {totalPages}
             </span>
             <button
@@ -459,13 +446,13 @@ const CustomerDetailPage = () => {
                 setCurrentPage(Math.min(totalPages, currentPage + 1))
               }
               disabled={currentPage === totalPages}
-              className={`px-4 py-2 text-sm font-medium rounded-lg ${
+              className={`px-2 py-1 rounded ${
                 currentPage === totalPages
                   ? "bg-gray-100 text-gray-400 cursor-not-allowed"
                   : "bg-white text-gray-700 hover:bg-gray-50"
               }`}
             >
-              Next
+              <ChevronRight className="h-3 w-3" />
             </button>
           </div>
         )}
