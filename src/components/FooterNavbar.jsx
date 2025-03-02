@@ -9,14 +9,15 @@ import { useAuth } from "../context/AuthContext";
 const FooterNavbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { currentUser } = useAuth(); // Add this line
+  const { currentUser } = useAuth();
 
   // Add this check - don't render navbar if not authenticated
   if (!currentUser) {
     return null;
   }
+
   // Helper function to determine if a path is active
-  // Helper function to determine if a path is active
+
   const isActive = (path) => {
     if (path === "/dashboard") {
       return location.pathname === "/dashboard";

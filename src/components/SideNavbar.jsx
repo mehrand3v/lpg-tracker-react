@@ -10,6 +10,8 @@ import {
 } from "lucide-react";
 import { signOut } from "../services/authService";
 import { useAuth } from "../context/AuthContext";
+import reactLogo from '../assets/profile2.png';
+// import reactLogo from '../assets/profile1.jpg'; // Adjust the path according to your folder structure
 
 const SideNavbar = () => {
   const location = useLocation();
@@ -40,6 +42,18 @@ const SideNavbar = () => {
   return (
     <nav className="flex-1 pt-5 pb-4 overflow-y-auto hidden lg:block">
       <div className="px-4 space-y-1">
+        {/* User Profile Section */}
+        <div className="flex items-center justify-center space-x-3 p-4 rounded-lg bg-indigo-800 text-white">
+          <img
+            src={reactLogo} // Using the imported image
+            alt="Profile"
+            className="h-14 w-14 rounded-full border border-indigo-800   object-cover"
+            style={{
+              filter: "grayscale(10%) brightness(0.9) contrast(1.5)", // Apply filters here
+            }}
+          />
+        </div>
+
         <Link to="/dashboard" {...getLinkStyles("/dashboard")}>
           <Home className="mr-3 h-5 w-5" />
           Dashboard
