@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import {
   fetchCustomerById,
-  fetchCustomerTransactions
+  fetchCustomerTransactions,
 } from "../services/firebaseService";
 import {
   User,
@@ -16,7 +16,9 @@ import {
   Flame,
   TrendingDown,
   TrendingUp,
-  Clock
+  Clock,
+  Plus,
+  Filter,
 } from "lucide-react";
 
 const CustomerDetailPage = () => {
@@ -30,8 +32,14 @@ const CustomerDetailPage = () => {
     balanceDue: 0,
     totalCylindersIssued: 0,
     totalCylindersReturned: 0,
-    cylindersOut: 0
+    cylindersOut: 0,
   });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [transactionsPerPage] = useState(10);
+  const [filters, setFilters] = useState({
+    type: "all", // 'all', 'sale', 'payment', 'return'
+  });
+  const navigate = useNavigate();
 
   useEffect(() => {
     const loadCustomerData = async () => {
@@ -58,34 +66,38 @@ const CustomerDetailPage = () => {
   }, [customerId]);
 
   const calculateStats = (transactions) => {
-    const stats = transactions.reduce((acc, transaction) => {
-      // Calculate financial stats
-      acc.totalAmount += transaction.amount || 0;
+    const stats = transactions.reduce(
+      (acc, transaction) => {
+        // Calculate financial stats
+        acc.totalAmount += transaction.amount || 0;
 
-      if (transaction.type === "payment") {
-        acc.amountPaid += transaction.amount || 0;
+        if (transaction.type === "payment") {
+          acc.amountPaid += transaction.amount || 0;
+        }
+
+        // Calculate cylinder stats
+        if (transaction.cylindersIssued) {
+          acc.totalCylindersIssued += transaction.cylindersIssued;
+        }
+
+        if (transaction.cylindersReturned) {
+          acc.totalCylindersReturned += transaction.cylindersReturned;
+        }
+
+        return acc;
+      },
+      {
+        totalAmount: 0,
+        amountPaid: 0,
+        totalCylindersIssued: 0,
+        totalCylindersReturned: 0,
       }
-
-      // Calculate cylinder stats
-      if (transaction.cylindersIssued) {
-        acc.totalCylindersIssued += transaction.cylindersIssued;
-      }
-
-      if (transaction.cylindersReturned) {
-        acc.totalCylindersReturned += transaction.cylindersReturned;
-      }
-
-      return acc;
-    }, {
-      totalAmount: 0,
-      amountPaid: 0,
-      totalCylindersIssued: 0,
-      totalCylindersReturned: 0
-    });
+    );
 
     // Calculate derived stats
     stats.balanceDue = stats.totalAmount - stats.amountPaid;
-    stats.cylindersOut = stats.totalCylindersIssued - stats.totalCylindersReturned;
+    stats.cylindersOut =
+      stats.totalCylindersIssued - stats.totalCylindersReturned;
 
     setStats(stats);
   };
@@ -103,8 +115,29 @@ const CustomerDetailPage = () => {
     return new Date(timestamp.toDate()).toLocaleDateString("en-US", {
       year: "numeric",
       month: "short",
-      day: "numeric"
+      day: "numeric",
     });
+  };
+
+  // Filter transactions based on selected filters
+  const filteredTransactions = transactions.filter((transaction) => {
+    if (filters.type === "all") return true;
+    return transaction.type === filters.type;
+  });
+
+  // Pagination logic
+  const indexOfLastTransaction = currentPage * transactionsPerPage;
+  const indexOfFirstTransaction = indexOfLastTransaction - transactionsPerPage;
+  const currentTransactions = filteredTransactions.slice(
+    indexOfFirstTransaction,
+    indexOfLastTransaction
+  );
+  const totalPages = Math.ceil(
+    filteredTransactions.length / transactionsPerPage
+  );
+
+  const handleAddTransaction = () => {
+    navigate(`/customers/${customerId}/new-transaction`);
   };
 
   if (loading) {
@@ -136,13 +169,23 @@ const CustomerDetailPage = () => {
               </span>
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-gray-800">{customer?.name || "Unknown Customer"}</h1>
+              <h1 className="text-2xl font-bold text-gray-800">
+                {customer?.name || "Unknown Customer"}
+              </h1>
               <p className="text-gray-500 flex items-center">
                 <Clock className="h-4 w-4 mr-1" />
-                Customer since: {customer?.createdAt ? formatDate(customer.createdAt) : "N/A"}
+                Customer since:{" "}
+                {customer?.createdAt ? formatDate(customer.createdAt) : "N/A"}
               </p>
             </div>
           </div>
+          <button
+            onClick={handleAddTransaction}
+            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 flex items-center justify-center"
+          >
+            <Plus className="h-5 w-5 mr-2" />
+            Add Transaction
+          </button>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -150,7 +193,9 @@ const CustomerDetailPage = () => {
             <Phone className="h-5 w-5 text-gray-400 mr-2 mt-0.5" />
             <div>
               <p className="text-sm text-gray-500">Phone</p>
-              <p className="text-gray-800">{customer?.phone || "No phone number"}</p>
+              <p className="text-gray-800">
+                {customer?.phone || "No phone number"}
+              </p>
             </div>
           </div>
 
@@ -166,7 +211,9 @@ const CustomerDetailPage = () => {
             <MapPin className="h-5 w-5 text-gray-400 mr-2 mt-0.5" />
             <div>
               <p className="text-sm text-gray-500">Address</p>
-              <p className="text-gray-800">{customer?.address || "No address"}</p>
+              <p className="text-gray-800">
+                {customer?.address || "No address"}
+              </p>
             </div>
           </div>
 
@@ -186,7 +233,9 @@ const CustomerDetailPage = () => {
           <div className="flex justify-between items-start">
             <div>
               <p className="text-indigo-100 text-sm">Total Amount</p>
-              <p className="text-2xl font-bold mt-1">{formatCurrency(stats.totalAmount)}</p>
+              <p className="text-2xl font-bold mt-1">
+                {formatCurrency(stats.totalAmount)}
+              </p>
             </div>
             <DollarSign className="h-6 w-6 text-indigo-200" />
           </div>
@@ -196,7 +245,9 @@ const CustomerDetailPage = () => {
           <div className="flex justify-between items-start">
             <div>
               <p className="text-emerald-100 text-sm">Amount Paid</p>
-              <p className="text-2xl font-bold mt-1">{formatCurrency(stats.amountPaid)}</p>
+              <p className="text-2xl font-bold mt-1">
+                {formatCurrency(stats.amountPaid)}
+              </p>
             </div>
             <TrendingUp className="h-6 w-6 text-emerald-200" />
           </div>
@@ -206,7 +257,9 @@ const CustomerDetailPage = () => {
           <div className="flex justify-between items-start">
             <div>
               <p className="text-rose-100 text-sm">Balance Due</p>
-              <p className="text-2xl font-bold mt-1">{formatCurrency(stats.balanceDue)}</p>
+              <p className="text-2xl font-bold mt-1">
+                {formatCurrency(stats.balanceDue)}
+              </p>
             </div>
             <TrendingDown className="h-6 w-6 text-rose-200" />
           </div>
@@ -219,7 +272,9 @@ const CustomerDetailPage = () => {
           <div className="flex justify-between items-start">
             <div>
               <p className="text-gray-500 text-sm">Total Cylinders Issued</p>
-              <p className="text-2xl font-bold mt-1 text-amber-600">{stats.totalCylindersIssued}</p>
+              <p className="text-2xl font-bold mt-1 text-amber-600">
+                {stats.totalCylindersIssued}
+              </p>
             </div>
             <Flame className="h-6 w-6 text-amber-500" />
           </div>
@@ -229,7 +284,9 @@ const CustomerDetailPage = () => {
           <div className="flex justify-between items-start">
             <div>
               <p className="text-gray-500 text-sm">Total Cylinders Returned</p>
-              <p className="text-2xl font-bold mt-1 text-green-600">{stats.totalCylindersReturned}</p>
+              <p className="text-2xl font-bold mt-1 text-green-600">
+                {stats.totalCylindersReturned}
+              </p>
             </div>
             <Flame className="h-6 w-6 text-green-500" />
           </div>
@@ -239,7 +296,9 @@ const CustomerDetailPage = () => {
           <div className="flex justify-between items-start">
             <div>
               <p className="text-gray-500 text-sm">Cylinders Outstanding</p>
-              <p className="text-2xl font-bold mt-1 text-blue-600">{stats.cylindersOut}</p>
+              <p className="text-2xl font-bold mt-1 text-blue-600">
+                {stats.cylindersOut}
+              </p>
             </div>
             <Flame className="h-6 w-6 text-blue-500" />
           </div>
@@ -248,9 +307,59 @@ const CustomerDetailPage = () => {
 
       {/* Transaction History */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 md:p-6">
-        <h2 className="text-xl font-bold text-gray-800 mb-4">Transaction History</h2>
+        <div className="flex flex-col md:flex-row md:items-center justify-between mb-4">
+          <h2 className="text-xl font-bold text-gray-800">
+            Transaction History
+          </h2>
+          <div className="flex items-center space-x-2 mt-4 md:mt-0">
+            <button
+              onClick={() => setFilters({ ...filters, type: "all" })}
+              className={`px-3 py-2 text-sm rounded-lg flex items-center ${
+                filters.type === "all"
+                  ? "bg-indigo-600 text-white"
+                  : "bg-white border border-gray-300 text-gray-700"
+              }`}
+            >
+              <Filter className="h-4 w-4 mr-1" />
+              All
+            </button>
+            <button
+              onClick={() => setFilters({ ...filters, type: "sale" })}
+              className={`px-3 py-2 text-sm rounded-lg flex items-center ${
+                filters.type === "sale"
+                  ? "bg-indigo-600 text-white"
+                  : "bg-white border border-gray-300 text-gray-700"
+              }`}
+            >
+              <Filter className="h-4 w-4 mr-1" />
+              Sales
+            </button>
+            <button
+              onClick={() => setFilters({ ...filters, type: "payment" })}
+              className={`px-3 py-2 text-sm rounded-lg flex items-center ${
+                filters.type === "payment"
+                  ? "bg-indigo-600 text-white"
+                  : "bg-white border border-gray-300 text-gray-700"
+              }`}
+            >
+              <Filter className="h-4 w-4 mr-1" />
+              Payments
+            </button>
+            <button
+              onClick={() => setFilters({ ...filters, type: "return" })}
+              className={`px-3 py-2 text-sm rounded-lg flex items-center ${
+                filters.type === "return"
+                  ? "bg-indigo-600 text-white"
+                  : "bg-white border border-gray-300 text-gray-700"
+              }`}
+            >
+              <Filter className="h-4 w-4 mr-1" />
+              Returns
+            </button>
+          </div>
+        </div>
 
-        {transactions.length === 0 ? (
+        {currentTransactions.length === 0 ? (
           <div className="text-center py-8 text-gray-500">
             No transaction history found for this customer
           </div>
@@ -259,48 +368,105 @@ const CustomerDetailPage = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead>
                 <tr className="bg-gray-50">
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cylinders Issued</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cylinders Returned</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Notes</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Date
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Type
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Amount
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Cylinders Issued
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Cylinders Returned
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Notes
+                  </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {transactions.map((transaction) => (
+                {currentTransactions.map((transaction) => (
                   <tr key={transaction.id} className="hover:bg-gray-50">
                     <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
                       {formatDate(transaction.createdAt)}
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                        ${transaction.type === 'sale' ? 'bg-indigo-100 text-indigo-800' :
-                          transaction.type === 'payment' ? 'bg-green-100 text-green-800' :
-                          transaction.type === 'return' ? 'bg-amber-100 text-amber-800' :
-                          'bg-gray-100 text-gray-800'}`
-                      }>
-                        {transaction.type?.charAt(0).toUpperCase() + transaction.type?.slice(1) || 'Unknown'}
+                      <span
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                          transaction.type === "sale"
+                            ? "bg-indigo-100 text-indigo-800"
+                            : transaction.type === "payment"
+                            ? "bg-green-100 text-green-800"
+                            : transaction.type === "return"
+                            ? "bg-amber-100 text-amber-800"
+                            : "bg-gray-100 text-gray-800"
+                        }`}
+                      >
+                        {transaction.type?.charAt(0).toUpperCase() +
+                          transaction.type?.slice(1) || "Unknown"}
                       </span>
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap text-sm">
-                      <span className={transaction.type === 'payment' ? 'text-green-600 font-medium' : 'text-gray-900'}>
+                      <span
+                        className={
+                          transaction.type === "payment"
+                            ? "text-green-600 font-medium"
+                            : "text-gray-900"
+                        }
+                      >
                         {formatCurrency(transaction.amount || 0)}
                       </span>
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
-                      {transaction.cylindersIssued || '-'}
+                      {transaction.cylindersIssued || "-"}
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
-                      {transaction.cylindersReturned || '-'}
+                      {transaction.cylindersReturned || "-"}
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-900">
-                      {transaction.notes || '-'}
+                      {transaction.notes || "-"}
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
+          </div>
+        )}
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex justify-between items-center mt-6">
+            <button
+              onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+              disabled={currentPage === 1}
+              className={`px-4 py-2 text-sm font-medium rounded-lg ${
+                currentPage === 1
+                  ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                  : "bg-white text-gray-700 hover:bg-gray-50"
+              }`}
+            >
+              Previous
+            </button>
+            <span className="text-sm text-gray-700">
+              Page {currentPage} of {totalPages}
+            </span>
+            <button
+              onClick={() =>
+                setCurrentPage(Math.min(totalPages, currentPage + 1))
+              }
+              disabled={currentPage === totalPages}
+              className={`px-4 py-2 text-sm font-medium rounded-lg ${
+                currentPage === totalPages
+                  ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                  : "bg-white text-gray-700 hover:bg-gray-50"
+              }`}
+            >
+              Next
+            </button>
           </div>
         )}
       </div>

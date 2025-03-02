@@ -10,11 +10,12 @@ import { AuthProvider } from "./context/AuthContext";
 import PrivateRoute from "./components/PrivateRoute";
 import Login from "./components/Login";
 import FooterNavbar from "./components/FooterNavbar";
-import SideNavbar from "./components/SideNavbar"; // Import the new SideNavbar
+import SideNavbar from "./components/SideNavbar";
 import Dashboard from "./pages/Dashboard";
 import CustomersPage from "./pages/CustomersPage";
 import CustomerDetailPage from "./pages/CustomerDetailPage";
-import { useAuth } from "./context/AuthContext"; // Import useAuth
+import NewTransactionPage from "./pages/NewTransactionPage"; // Import the new transaction page
+import { useAuth } from "./context/AuthContext";
 
 // Layout component to handle the navbars and content structure
 const AppLayout = ({ children }) => {
@@ -66,7 +67,6 @@ function App() {
             element={
               <PrivateRoute>
                 <AppLayout>
-                  {/* Replace with your Customers component */}
                   <CustomersPage />
                 </AppLayout>
               </PrivateRoute>
@@ -82,58 +82,12 @@ function App() {
               </PrivateRoute>
             }
           />
-
           <Route
-            path="/transactions"
+            path="/customers/:customerId/new-transaction"
             element={
               <PrivateRoute>
                 <AppLayout>
-                  {/* Replace with your Transactions component */}
-                  <div className="p-6">
-                    <h1 className="text-2xl font-bold">Transactions</h1>
-                  </div>
-                </AppLayout>
-              </PrivateRoute>
-            }
-          />
-
-          <Route
-            path="/inventory"
-            element={
-              <PrivateRoute>
-                <AppLayout>
-                  {/* Replace with your Inventory component */}
-                  <div className="p-6">
-                    <h1 className="text-2xl font-bold">Inventory</h1>
-                  </div>
-                </AppLayout>
-              </PrivateRoute>
-            }
-          />
-
-          <Route
-            path="/reports"
-            element={
-              <PrivateRoute>
-                <AppLayout>
-                  {/* Replace with your Reports component */}
-                  <div className="p-6">
-                    <h1 className="text-2xl font-bold">Reports</h1>
-                  </div>
-                </AppLayout>
-              </PrivateRoute>
-            }
-          />
-
-          <Route
-            path="/settings"
-            element={
-              <PrivateRoute>
-                <AppLayout>
-                  {/* Replace with your Settings component */}
-                  <div className="p-6">
-                    <h1 className="text-2xl font-bold">Settings</h1>
-                  </div>
+                  <NewTransactionPage />
                 </AppLayout>
               </PrivateRoute>
             }

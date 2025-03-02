@@ -1,3 +1,5 @@
+// src/services/firebaseService.js
+
 import {
   getDocs,
   getDoc,
@@ -6,6 +8,8 @@ import {
   query,
   where,
   orderBy,
+  addDoc,
+  serverTimestamp,
 } from "firebase/firestore";
 import { db } from "../firebase";
 
@@ -79,6 +83,21 @@ export const fetchCustomerTransactions = async (customerId) => {
     }));
   } catch (error) {
     console.error("Error fetching customer transactions:", error);
+    throw error;
+  }
+};
+
+
+export const addTransaction = async (customerId, transaction) => {
+  try {
+    const transactionData = {
+      ...transaction,
+      customerId,
+      createdAt: serverTimestamp(),
+    };
+    await addDoc(collection(db, "transactions"), transactionData);
+  } catch (error) {
+    console.error("Error adding transaction:", error);
     throw error;
   }
 };

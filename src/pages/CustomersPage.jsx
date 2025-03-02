@@ -184,12 +184,6 @@ const CustomersPage = () => {
                     scope="col"
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
-                    Phone
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
                     Balance Due
                   </th>
                   <th
@@ -211,8 +205,7 @@ const CustomersPage = () => {
                       <div className="flex items-center">
                         <div className="flex-shrink-0 h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
                           <span className="text-indigo-700 font-medium">
-                            {customer.name?.substring(0, 2).toUpperCase() ||
-                              "NA"}
+                            {customer.name?.substring(0, 2).toUpperCase() || "NA"}
                           </span>
                         </div>
                         <div className="ml-4">
@@ -229,9 +222,6 @@ const CustomersPage = () => {
                           </div>
                         </div>
                       </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {customer.phone || "No phone"}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-rose-600">
