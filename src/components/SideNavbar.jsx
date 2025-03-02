@@ -8,7 +8,7 @@ import {
   Settings,
   LogOut,
 } from "lucide-react";
-import { signOut } from "../services/authService"; 
+import { signOut } from "../services/authService";
 import { useAuth } from "../context/AuthContext";
 
 const SideNavbar = () => {
@@ -70,7 +70,7 @@ const SideNavbar = () => {
       <div className="mt-8 px-4">
         <button
           onClick={handleLogout}
-          className="flex items-center w-full px-4 py-3 text-indigo-100 hover:bg-indigo-700 rounded-lg"
+          className="flex items-center w-full px-4 py-3 text-indigo-100 hover:bg-indigo-700 rounded-lg cursor-pointer"
         >
           <LogOut className="mr-3 h-5 w-5" />
           Logout

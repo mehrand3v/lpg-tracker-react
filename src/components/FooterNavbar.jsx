@@ -146,7 +146,7 @@ const FooterNavbar = () => {
         {/* Logout Button */}
         <button
           onClick={handleLogout}
-          className="flex flex-col items-center py-2 px-3 rounded-lg text-gray-200 hover:bg-indigo-700 transition-all duration-300 hover:scale-110"
+          className="flex flex-col items-center py-2 px-3 rounded-lg text-gray-200 hover:bg-indigo-700 transition-all duration-300 hover:scale-110 cursor-pointer"
         >
           <LogOut className="h-5 w-5 text-gray-200" />
           <span className="text-xs font-medium mt-1">Logout</span>
