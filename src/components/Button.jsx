@@ -1,4 +1,7 @@
+
+
 const Button = ({ text, onClick, icon, variant = "primary" }) => {
+
   const variants = {
     primary:
       "bg-gradient-to-r from-indigo-500 to-indigo-700 hover:from-indigo-600 hover:to-indigo-800 text-white",

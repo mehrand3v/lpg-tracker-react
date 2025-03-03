@@ -98,69 +98,7 @@ const Dashboard = () => {
 
   return (
     <div className="flex h-screen bg-gray-50">
-      {/* Sidebar for large screens */}
-      {/* <div className="hidden lg:flex flex-col w-64 bg-gradient-to-b from-indigo-800 to-indigo-950 text-white">
-        <div className="p-5 border-b border-indigo-700 flex justify-between items-center">
-          <h2 className="text-xl font-bold">Gas Dashboard</h2>
-        </div> */}
-
-        {/* <nav className="flex-1 pt-5 pb-4 overflow-y-auto">
-          <div className="px-4 space-y-1">
-            <a
-              href="#"
-              className="flex items-center px-4 py-3 text-white bg-indigo-700 rounded-lg"
-            >
-              <Home className="mr-3 h-5 w-5" />
-              Dashboard
-            </a>
-            <a
-              href="#"
-              className="flex items-center px-4 py-3 text-indigo-100 hover:bg-indigo-700 rounded-lg"
-            >
-              <Users className="mr-3 h-5 w-5" />
-              Customers
-            </a>
-            <a
-              href="#"
-              className="flex items-center px-4 py-3 text-indigo-100 hover:bg-indigo-700 rounded-lg"
-            >
-              <ShoppingCart className="mr-3 h-5 w-5" />
-              Transactions
-            </a>
-            <a
-              href="#"
-              className="flex items-center px-4 py-3 text-indigo-100 hover:bg-indigo-700 rounded-lg"
-            >
-              <Package className="mr-3 h-5 w-5" />
-              Inventory
-            </a>
-            <a
-              href="#"
-              className="flex items-center px-4 py-3 text-indigo-100 hover:bg-indigo-700 rounded-lg"
-            >
-              <PieChart className="mr-3 h-5 w-5" />
-              Reports
-            </a>
-            <a
-              href="#"
-              className="flex items-center px-4 py-3 text-indigo-100 hover:bg-indigo-700 rounded-lg"
-            >
-              <Settings className="mr-3 h-5 w-5" />
-              Settings
-            </a>
-          </div> */}
-
-          {/* <div className="mt-8 px-4">
-            <button
-              onClick={handleLogout}
-              className="flex items-center w-full px-4 py-3 text-indigo-100 hover:bg-indigo-700 rounded-lg"
-            >
-              <LogOut className="mr-3 h-5 w-5" />
-              Logout
-            </button>
-          </div> */}
-        {/* </nav> */}
-      {/* </div> */}
+    
 
       {/* Mobile sidebar overlay */}
       {sidebarOpen && (

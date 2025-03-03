@@ -1,9 +1,8 @@
 
 
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Home, Users, Clock, Package, Settings, LogOut } from "lucide-react";
 import { signOut } from "../services/authService";
-import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 const FooterNavbar = () => {
